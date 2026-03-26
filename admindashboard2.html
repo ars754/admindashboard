@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Dashboard</title>
+    <link rel="stylesheet" href="admindashboard2.css">
+    <script src="https://cdn.tailwindcss.com/3.4.17" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js" type="text/javascript"></script>
+    <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+    <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
+  </head>
+  <body>
+    <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon">📚</div><span class="logo-text">MindScroll</span>
+      </div>
+      <nav class="nav-section">
+        <button class="nav-item-custom active"><span>🏠</span><span>Dashboard</span></button>
+        <button class="nav-item-custom"><span>📖</span><span>My Courses</span></button> 
+        <button class="nav-item-custom"> <span>⭐</span><span>Wishlist</span></button> 
+        <button class="nav-item-custom"> <span>📊</span><span>Progress</span></button>
+      </nav>
+    </aside>
+    <main class="main-content">
+      <div class="topbar">
+        <h1>Dashboard</h1>
+        <div class="topbar-right"><button class="ask-ai-btn"><span class="ai-dot"></span><span>Ask AI</span></button><select class="lang-select" title="#"> <option>English</option> <option>Spanish</option> <option>French</option> </select> <button class="topbar-icon" aria-label="Search">🔍</button> <button class="topbar-icon" aria-label="Notifications">🔔</button>
+        <div class="user-pill">
+      <div class="user-avatar">
+       JD
+      </div><span>John</span>
+     </div>
+    </div>
+   </div>
+   <div class="content-grid">
+    <div class="left-col">
+     <h2 class="section-title">Discover New Courses</h2>
+     <div class="discovery-scroll">
+      <div class="course-card">
+       <div class="course-thumb thumb-1">
+        🎨
+       </div>
+       <div class="course-meta">
+        <div class="course-name">
+         Web Design Basics
+        </div>
+        <div class="star-rating">
+         ★★★★★ (1.2k)
+        </div>
+        <div class="course-by">
+         By Sarah Chen
+        </div>
+        <div class="course-duration">
+         8 weeks
+        </div>
+       </div>
+       <div class="trending-tag">
+        Trending
+       </div>
+      </div>
+      <div class="course-card">
+       <div class="course-thumb thumb-2">
+        💻
+       </div>
+       <div class="course-meta">
+        <div class="course-name">
+         React Masterclass
+        </div>
+        <div class="star-rating">
+         ★★★★☆ (2.4k)
+        </div>
+        <div class="course-by">
+         By Alex Rodriguez
+        </div>
+        <div class="course-duration">
+         10 weeks
+        </div>
+       </div>
+       <div class="trending-tag">
+        Trending
+       </div>
+      </div>
+      <div class="course-card">
+       <div class="course-thumb thumb-3">
+        📱
+       </div>
+       <div class="course-meta">
+        <div class="course-name">
+         Mobile App Dev
+        </div>
+        <div class="star-rating">
+         ★★★★★ (890)
+        </div>
+        <div class="course-by">
+         By Emma Wilson
+        </div>
+        <div class="course-duration">
+         12 weeks
+        </div>
+       </div>
+      </div>
+      <div class="course-card">
+       <div class="course-thumb thumb-4">
+        🎬
+       </div>
+       <div class="course-meta">
+        <div class="course-name">
+         Video Production 101
+        </div>
+        <div class="star-rating">
+         ★★★★★ (560)
+        </div>
+        <div class="course-by">
+         By Marcus Lee
+        </div>
+        <div class="course-duration">
+         6 weeks
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="stat-cards">
+     <div class="stat-card">
+      <div>
+       <div class="stat-label">
+        Courses Enrolled
+       </div>
+       <div class="stat-value">
+        12
+       </div>
+      </div>
+      <div class="stat-icon">
+       📚
+      </div>
+     </div>
+     <div class="stat-card">
+      <div>
+       <div class="stat-label">
+        Certificates
+       </div>
+       <div class="stat-value">
+        5
+       </div>
+      </div>
+      <div class="stat-icon">
+       🏆
+      </div>
+     </div>
+     <div class="stat-card">
+      <div>
+       <div class="stat-label">
+        Total Hours
+       </div>
+       <div class="stat-value">
+        124
+       </div>
+      </div>
+      <div class="stat-icon">
+       ⏱️
+      </div>
+     </div>
+     <div class="stat-card">
+      <div>
+       <div class="stat-label">Learning Streak</div>
+       <div class="stat-value">18 days</div>
+      </div>
+      <div class="stat-icon">🔥</div>
+     </div>
+    </div>
+   </div>
+  </main>
+  <script src="admindashboard2.js"></script>
+</body>
+</html>
