@@ -1,0 +1,1439 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MindScroll Admin Dashboard</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&amp;family=Syne:wght@600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body, .app-root {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #0d0f1a;
+      color: #e2e8f0;
+    }
+
+    /* ── Layout ── */
+    .app-root {
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 220px;
+      min-width: 220px;
+      height: 100%;
+      background: #111320;
+      border-right: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      overflow-y: auto;
+      transition: transform 0.3s ease;
+      z-index: 50;
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 22px 20px 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .logo-text {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-section {
+      padding: 14px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex: 1;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: none;
+      background: transparent;
+      color: #7a8499;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.18s, color 0.18s;
+      width: 100%;
+    }
+
+    .nav-item:hover {
+      background: rgba(255,255,255,0.05);
+      color: #c8d0e0;
+    }
+
+    .nav-item.active {
+      background: rgba(99, 149, 255, 0.12);
+      color: #6395ff;
+    }
+
+    .nav-item .nav-icon {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      background: #6395ff;
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 700;
+      border-radius: 20px;
+      padding: 1px 7px;
+      line-height: 1.6;
+    }
+
+    .sidebar-bottom {
+      padding: 14px 10px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    /* ── Main ── */
+    .main-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    /* ── Topbar ── */
+    .topbar {
+      height: 60px;
+      background: #111320;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .topbar-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.02em;
+      margin-right: auto;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ai-btn {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: linear-gradient(135deg, #6395ff22, #a78bfa22);
+      border: 1px solid rgba(99,149,255,0.35);
+      color: #a5b8ff;
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .ai-btn:hover {
+      background: linear-gradient(135deg, #6395ff33, #a78bfa33);
+      color: #c4d1ff;
+    }
+
+    .ai-pulse {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #6395ff;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 #6395ff66; }
+      50% { opacity: 0.8; box-shadow: 0 0 0 5px transparent; }
+    }
+
+    .lang-select {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #94a3b8;
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.78rem;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .topbar-icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      color: #7a8499;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+
+    .topbar-icon-btn:hover {
+      background: rgba(255,255,255,0.09);
+      color: #c8d0e0;
+    }
+
+    .notif-wrap {
+      position: relative;
+    }
+
+    .notif-dot {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #f87171;
+      border: 1.5px solid #111320;
+    }
+
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 4px 12px 4px 4px;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+
+    .user-pill:hover {
+      background: rgba(255,255,255,0.09);
+    }
+
+    .user-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6395ff, #a78bfa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .user-name {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #c8d0e0;
+    }
+
+    /* ── Content Area ── */
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 24px;
+      display: flex;
+      gap: 20px;
+    }
+
+    .content-area::-webkit-scrollbar { width: 4px; }
+    .content-area::-webkit-scrollbar-track { background: transparent; }
+    .content-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+    /* ── Left Column ── */
+    .col-left {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* ── Right Panel ── */
+    .col-right {
+      width: 280px;
+      min-width: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    /* ── Section Header ── */
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #4a5568;
+      margin-bottom: 12px;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: #161929;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 18px 20px;
+    }
+
+    /* ── Stats Row ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .stat-card {
+      background: #161929;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: border-color 0.2s;
+    }
+
+    .stat-card:hover {
+      border-color: rgba(99,149,255,0.25);
+    }
+
+    .stat-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .stat-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: #5a6478;
+      font-weight: 500;
+    }
+
+    .stat-delta {
+      font-size: 0.7rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .stat-delta.up { color: #34d399; }
+    .stat-delta.down { color: #f87171; }
+
+    /* ── Progress Bars ── */
+    .progress-bar-wrap {
+      background: rgba(255,255,255,0.06);
+      border-radius: 99px;
+      height: 6px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.8s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ── Discovery Scroll ── */
+    .discovery-scroll {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+    }
+
+    .discovery-scroll::-webkit-scrollbar { height: 3px; }
+    .discovery-scroll::-webkit-scrollbar-track { background: transparent; }
+    .discovery-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+    .discovery-card {
+      min-width: 160px;
+      background: #161929;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s;
+      flex-shrink: 0;
+    }
+
+    .discovery-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(99,149,255,0.3);
+    }
+
+    .discovery-thumb {
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+    }
+
+    .discovery-info {
+      padding: 10px 12px;
+    }
+
+    .discovery-title {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #c8d0e0;
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+
+    .discovery-meta {
+      font-size: 0.68rem;
+      color: #4a5568;
+    }
+
+    /* ── Course List ── */
+    .course-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      cursor: pointer;
+      transition: background 0.15s;
+      border-radius: 8px;
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+
+    .course-row:last-child { border-bottom: none; }
+    .course-row:hover { background: rgba(255,255,255,0.03); }
+
+    .course-thumb-emoji {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .course-info { flex: 1; min-width: 0; }
+
+    .course-name {
+      font-size: 0.83rem;
+      font-weight: 600;
+      color: #c8d0e0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .course-sub {
+      font-size: 0.7rem;
+      color: #4a5568;
+      margin-top: 2px;
+    }
+
+    .course-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 20px;
+      flex-shrink: 0;
+    }
+
+    .badge-active { background: rgba(52,211,153,0.12); color: #34d399; }
+    .badge-pending { background: rgba(251,191,36,0.12); color: #fbbf24; }
+    .badge-done { background: rgba(99,149,255,0.12); color: #6395ff; }
+
+    /* ── Activity Feed ── */
+    .activity-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .activity-item:last-child { border-bottom: none; }
+
+    .activity-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-top: 5px;
+      flex-shrink: 0;
+    }
+
+    .activity-text {
+      font-size: 0.78rem;
+      color: #7a8499;
+      line-height: 1.5;
+    }
+
+    .activity-text strong {
+      color: #c8d0e0;
+      font-weight: 600;
+    }
+
+    .activity-time {
+      font-size: 0.67rem;
+      color: #3a4358;
+      margin-top: 2px;
+    }
+
+    /* ── Calendar Mini ── */
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 3px;
+      margin-top: 8px;
+    }
+
+    .cal-day-header {
+      text-align: center;
+      font-size: 0.62rem;
+      color: #3a4358;
+      font-weight: 600;
+      padding: 3px 0;
+    }
+
+    .cal-day {
+      text-align: center;
+      font-size: 0.7rem;
+      color: #5a6478;
+      padding: 5px 2px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .cal-day:hover { background: rgba(255,255,255,0.05); color: #c8d0e0; }
+    .cal-day.today { background: #6395ff; color: #fff; font-weight: 700; }
+    .cal-day.has-event { position: relative; }
+    .cal-day.has-event::after {
+      content: '';
+      position: absolute;
+      bottom: 1px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: #a78bfa;
+    }
+    .cal-day.empty { pointer-events: none; }
+
+    /* ── Leaderboard ── */
+    .leader-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .leader-row:last-child { border-bottom: none; }
+
+    .leader-rank {
+      width: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #3a4358;
+      flex-shrink: 0;
+      text-align: center;
+    }
+
+    .leader-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .leader-name {
+      flex: 1;
+      font-size: 0.78rem;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+
+    .leader-pts {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #6395ff;
+    }
+
+    .leader-crown { color: #fbbf24; }
+
+    /* ── Mobile toggle ── */
+    .mobile-toggle {
+      display: none;
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      z-index: 100;
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      background: #161929;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #c8d0e0;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 40;
+    }
+
+    @media (max-width: 900px) {
+      .col-right { display: none; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      .sidebar {
+        position: fixed;
+        top: 0; left: 0; bottom: 0;
+        transform: translateX(-100%);
+        z-index: 60;
+      }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay.open { display: block; }
+      .mobile-toggle { display: flex; }
+      .topbar { padding-left: 58px; }
+      .content-area { padding: 14px; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* ── Welcome Banner ── */
+    .welcome-banner {
+      background: linear-gradient(135deg, #1a1f3a 0%, #161929 100%);
+      border: 1px solid rgba(99,149,255,0.2);
+      border-radius: 16px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .welcome-text-block h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .welcome-text-block p {
+      font-size: 0.8rem;
+      color: #5a6478;
+      margin-top: 4px;
+    }
+
+    .welcome-cta {
+      background: linear-gradient(135deg, #6395ff, #a78bfa);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 9px 18px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+
+    .welcome-cta:hover { opacity: 0.88; }
+
+    /* Chart placeholder */
+    .chart-area {
+      height: 120px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chart-svg { width: 100%; height: 100%; }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="app-root"><!-- Mobile overlay -->
+   <div class="sidebar-overlay" id="sidebarOverlay"></div><!-- Mobile toggle --> <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle sidebar"> <i data-lucide="menu" style="width:18px;height:18px;"></i> </button> <!-- ── Sidebar ── -->
+   <nav class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar-logo">
+     <svg width="28" height="28" viewbox="0 0 38 38" fill="none"><circle cx="14" cy="19" r="12" fill="#2D9CDB" /> <circle cx="24" cy="14" r="10" fill="#F2994A" fill-opacity=".85" />
+     </svg><span class="logo-text" id="logoText">MindScroll</span>
+    </div>
+    <div class="nav-section"><button class="nav-item active" data-page="dashboard"> <i data-lucide="layout-dashboard" class="nav-icon"></i> Dashboard </button> <button class="nav-item" data-page="courses"> <i data-lucide="book-open" class="nav-icon"></i> Courses <span class="nav-badge">4</span> </button> <button class="nav-item" data-page="resources"> <i data-lucide="package" class="nav-icon"></i> Resources </button> <button class="nav-item" data-page="chat"> <i data-lucide="message-circle" class="nav-icon"></i> Chat <span class="nav-badge" style="background:#f87171;">2</span> </button> <button class="nav-item" data-page="schedule"> <i data-lucide="calendar" class="nav-icon"></i> Schedule </button> <button class="nav-item" data-page="profile"> <i data-lucide="user" class="nav-icon"></i> Profile </button> <button class="nav-item" data-page="settings"> <i data-lucide="settings" class="nav-icon"></i> Settings </button>
+    </div>
+    <div class="sidebar-bottom"><button class="nav-item" style="color:#f87171;"> <i data-lucide="log-out" class="nav-icon"></i> Sign out </button>
+    </div>
+   </nav><!-- ── Main ── -->
+   <div class="main-wrap"><!-- Topbar -->
+    <header class="topbar"><span class="topbar-title" id="pageHeading">Dashboard</span>
+     <div class="topbar-actions"><button class="ai-btn"> <span class="ai-pulse"></span> Ask AI </button> <select class="lang-select" aria-label="Language selector"> <option>English</option> <option>Spanish</option> <option>French</option> <option>Hindi</option> </select> <button class="topbar-icon-btn" aria-label="Chat"> <i data-lucide="message-square" style="width:15px;height:15px;"></i> </button> <button class="topbar-icon-btn notif-wrap" aria-label="Notifications"> <i data-lucide="bell" style="width:15px;height:15px;"></i> <span class="notif-dot"></span> </button>
+      <div class="user-pill" role="button" aria-label="User menu">
+       <div class="user-avatar" id="userInitials">
+        IN
+       </div><span class="user-name" id="userName">Infonative</span> <i data-lucide="chevron-down" style="width:12px;height:12px;color:#5a6478;"></i>
+      </div>
+     </div>
+    </header><!-- Content Area -->
+    <div class="content-area"><!-- Left Column -->
+     <div class="col-left"><!-- Welcome Banner -->
+      <div class="welcome-banner">
+       <div class="welcome-text-block">
+        <h2>Welcome back, Infonative 👋</h2>
+        <p id="welcomeMsg">Keep learning — you're on a 5-day streak!</p>
+       </div><button class="welcome-cta">Resume Learning</button>
+      </div><!-- Stats -->
+      <div class="stats-row">
+       <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(99,149,255,0.12);"><i data-lucide="book-open" style="width:18px;height:18px;color:#6395ff;"></i>
+        </div>
+        <div>
+         <div class="stat-value">
+          12
+         </div>
+         <div class="stat-label">
+          Enrolled Courses
+         </div>
+        </div>
+        <div class="stat-delta up"><i data-lucide="trending-up" style="width:11px;height:11px;"></i> +2 this month
+        </div>
+       </div>
+       <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(52,211,153,0.12);"><i data-lucide="check-circle" style="width:18px;height:18px;color:#34d399;"></i>
+        </div>
+        <div>
+         <div class="stat-value">
+          7
+         </div>
+         <div class="stat-label">
+          Completed
+         </div>
+        </div>
+        <div class="stat-delta up"><i data-lucide="trending-up" style="width:11px;height:11px;"></i> +1 this week
+        </div>
+       </div>
+       <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(251,191,36,0.12);"><i data-lucide="clock" style="width:18px;height:18px;color:#fbbf24;"></i>
+        </div>
+        <div>
+         <div class="stat-value">
+          48h
+         </div>
+         <div class="stat-label">
+          Learning Time
+         </div>
+        </div>
+        <div class="stat-delta up"><i data-lucide="trending-up" style="width:11px;height:11px;"></i> +6h this week
+        </div>
+       </div>
+       <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(167,139,250,0.12);"><i data-lucide="award" style="width:18px;height:18px;color:#a78bfa;"></i>
+        </div>
+        <div>
+         <div class="stat-value">
+          320
+         </div>
+         <div class="stat-label">
+          XP Points
+         </div>
+        </div>
+        <div class="stat-delta up"><i data-lucide="trending-up" style="width:11px;height:11px;"></i> +40 today
+        </div>
+       </div>
+      </div><!-- Content Discovery -->
+      <div>
+       <div class="section-label">
+        Content Discovery
+       </div>
+       <div class="discovery-scroll">
+        <div class="discovery-card">
+         <div class="discovery-thumb" style="background:linear-gradient(135deg,#1a1f3a,#22263d);">
+          🤖
+         </div>
+         <div class="discovery-info">
+          <div class="discovery-title">
+           Intro to AI &amp; ML
+          </div>
+          <div class="discovery-meta">
+           24 lessons · 6h
+          </div>
+         </div>
+        </div>
+        <div class="discovery-card">
+         <div class="discovery-thumb" style="background:linear-gradient(135deg,#1f1a2e,#261d3a);">
+          📊
+         </div>
+         <div class="discovery-info">
+          <div class="discovery-title">
+           Data Analytics Basics
+          </div>
+          <div class="discovery-meta">
+           18 lessons · 4h
+          </div>
+         </div>
+        </div>
+        <div class="discovery-card">
+         <div class="discovery-thumb" style="background:linear-gradient(135deg,#1a2f25,#1d3328);">
+          🌐
+         </div>
+         <div class="discovery-info">
+          <div class="discovery-title">
+           Web Dev Fundamentals
+          </div>
+          <div class="discovery-meta">
+           32 lessons · 9h
+          </div>
+         </div>
+        </div>
+        <div class="discovery-card">
+         <div class="discovery-thumb" style="background:linear-gradient(135deg,#2f1a1a,#3a1d1d);">
+          🔐
+         </div>
+         <div class="discovery-info">
+          <div class="discovery-title">
+           Cybersecurity 101
+          </div>
+          <div class="discovery-meta">
+           20 lessons · 5h
+          </div>
+         </div>
+        </div>
+        <div class="discovery-card">
+         <div class="discovery-thumb" style="background:linear-gradient(135deg,#2a1f1a,#352518);">
+          ☁️
+         </div>
+         <div class="discovery-info">
+          <div class="discovery-title">
+           Cloud Computing
+          </div>
+          <div class="discovery-meta">
+           28 lessons · 7h
+          </div>
+         </div>
+        </div>
+       </div>
+      </div><!-- Active Courses -->
+      <div class="card">
+       <div class="section-label">
+        Active Courses
+       </div>
+       <div class="course-row">
+        <div class="course-thumb-emoji" style="background:rgba(99,149,255,0.12);">
+         🐍
+        </div>
+        <div class="course-info">
+         <div class="course-name">
+          Python for Data Science
+         </div>
+         <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" style="width:72%;background:linear-gradient(90deg,#6395ff,#a78bfa);"></div>
+         </div>
+         <div class="course-sub">
+          72% complete · 3h left
+         </div>
+        </div><span class="course-badge badge-active">Active</span>
+       </div>
+       <div class="course-row">
+        <div class="course-thumb-emoji" style="background:rgba(52,211,153,0.12);">
+         🎨
+        </div>
+        <div class="course-info">
+         <div class="course-name">
+          UI/UX Design Principles
+         </div>
+         <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" style="width:45%;background:linear-gradient(90deg,#34d399,#6ee7b7);"></div>
+         </div>
+         <div class="course-sub">
+          45% complete · 5h left
+         </div>
+        </div><span class="course-badge badge-pending">Pending</span>
+       </div>
+       <div class="course-row">
+        <div class="course-thumb-emoji" style="background:rgba(251,191,36,0.12);">
+         📱
+        </div>
+        <div class="course-info">
+         <div class="course-name">
+          React Native Mobile Dev
+         </div>
+         <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" style="width:88%;background:linear-gradient(90deg,#fbbf24,#f59e0b);"></div>
+         </div>
+         <div class="course-sub">
+          88% complete · 1h left
+         </div>
+        </div><span class="course-badge badge-done">Nearly done</span>
+       </div>
+       <div class="course-row">
+        <div class="course-thumb-emoji" style="background:rgba(167,139,250,0.12);">
+         🗄️
+        </div>
+        <div class="course-info">
+         <div class="course-name">
+          SQL &amp; Database Design
+         </div>
+         <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" style="width:30%;background:linear-gradient(90deg,#a78bfa,#c4b5fd);"></div>
+         </div>
+         <div class="course-sub">
+          30% complete · 8h left
+         </div>
+        </div><span class="course-badge badge-pending">Pending</span>
+       </div>
+      </div><!-- Activity & Chart Row -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;"><!-- Weekly Activity Chart -->
+       <div class="card">
+        <div class="section-label">
+         Weekly Activity
+        </div>
+        <div class="chart-area">
+         <svg class="chart-svg" viewbox="0 0 260 110" preserveaspectratio="none"><defs>
+           <lineargradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#6395ff" stop-opacity="0.3" />
+            <stop offset="100%" stop-color="#6395ff" stop-opacity="0.0" />
+           </lineargradient>
+          </defs> <!-- Grid lines --> <line x1="0" y1="90" x2="260" y2="90" stroke="rgba(255,255,255,0.05)" stroke-width="1" /> <line x1="0" y1="65" x2="260" y2="65" stroke="rgba(255,255,255,0.05)" stroke-width="1" /> <line x1="0" y1="40" x2="260" y2="40" stroke="rgba(255,255,255,0.05)" stroke-width="1" /> <line x1="0" y1="15" x2="260" y2="15" stroke="rgba(255,255,255,0.05)" stroke-width="1" /> <!-- Area fill --> <path d="M10,75 C30,70 50,50 80,45 C110,40 130,60 160,35 C190,10 210,25 250,20 L250,90 L10,90 Z" fill="url(#chartGrad)" /> <!-- Line --> <path d="M10,75 C30,70 50,50 80,45 C110,40 130,60 160,35 C190,10 210,25 250,20" fill="none" stroke="#6395ff" stroke-width="2" stroke-linecap="round" /> <!-- Dots --> <circle cx="10" cy="75" r="3" fill="#6395ff" /> <circle cx="80" cy="45" r="3" fill="#6395ff" /> <circle cx="160" cy="35" r="3" fill="#6395ff" /> <circle cx="250" cy="20" r="4" fill="#6395ff" stroke="#0d0f1a" stroke-width="2" /> <!-- Labels --> <text x="10" y="104" font-size="9" fill="#3a4358" text-anchor="middle" font-family="DM Sans">
+           Mon
+          </text> <text x="80" y="104" font-size="9" fill="#3a4358" text-anchor="middle" font-family="DM Sans">
+           Wed
+          </text> <text x="160" y="104" font-size="9" fill="#3a4358" text-anchor="middle" font-family="DM Sans">
+           Fri
+          </text> <text x="250" y="104" font-size="9" fill="#6395ff" text-anchor="middle" font-family="DM Sans" font-weight="700">
+           Sun
+          </text>
+         </svg>
+        </div>
+       </div><!-- Recent Activity -->
+       <div class="card">
+        <div class="section-label">
+         Recent Activity
+        </div>
+        <div class="activity-item">
+         <div class="activity-dot" style="background:#34d399;"></div>
+         <div>
+          <div class="activity-text">
+           <strong>Completed</strong> Module 7 of Python
+          </div>
+          <div class="activity-time">
+           2 hours ago
+          </div>
+         </div>
+        </div>
+        <div class="activity-item">
+         <div class="activity-dot" style="background:#6395ff;"></div>
+         <div>
+          <div class="activity-text">
+           <strong>Started</strong> SQL Database Design
+          </div>
+          <div class="activity-time">
+           Yesterday
+          </div>
+         </div>
+        </div>
+        <div class="activity-item">
+         <div class="activity-dot" style="background:#fbbf24;"></div>
+         <div>
+          <div class="activity-text">
+           <strong>Earned</strong> 40 XP from quiz
+          </div>
+          <div class="activity-time">
+           2 days ago
+          </div>
+         </div>
+        </div>
+        <div class="activity-item">
+         <div class="activity-dot" style="background:#a78bfa;"></div>
+         <div>
+          <div class="activity-text">
+           <strong>Joined</strong> UI/UX Design cohort
+          </div>
+          <div class="activity-time">
+           3 days ago
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div><!-- /col-left --> <!-- Right Column -->
+     <div class="col-right"><!-- Mini Calendar -->
+      <div class="card">
+       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <div class="section-label" style="margin-bottom:0;">
+         June 2025
+        </div>
+        <div style="display:flex;gap:4px;"><button class="topbar-icon-btn" style="width:24px;height:24px;border-radius:6px;" aria-label="Previous month"> <i data-lucide="chevron-left" style="width:12px;height:12px;"></i> </button> <button class="topbar-icon-btn" style="width:24px;height:24px;border-radius:6px;" aria-label="Next month"> <i data-lucide="chevron-right" style="width:12px;height:12px;"></i> </button>
+        </div>
+       </div>
+       <div class="cal-grid">
+        <div class="cal-day-header">
+         Su
+        </div>
+        <div class="cal-day-header">
+         Mo
+        </div>
+        <div class="cal-day-header">
+         Tu
+        </div>
+        <div class="cal-day-header">
+         We
+        </div>
+        <div class="cal-day-header">
+         Th
+        </div>
+        <div class="cal-day-header">
+         Fr
+        </div>
+        <div class="cal-day-header">
+         Sa
+        </div><!-- June 2025 starts on Sunday -->
+        <div class="cal-day">
+         1
+        </div>
+        <div class="cal-day has-event">
+         2
+        </div>
+        <div class="cal-day">
+         3
+        </div>
+        <div class="cal-day has-event">
+         4
+        </div>
+        <div class="cal-day">
+         5
+        </div>
+        <div class="cal-day">
+         6
+        </div>
+        <div class="cal-day">
+         7
+        </div>
+        <div class="cal-day">
+         8
+        </div>
+        <div class="cal-day">
+         9
+        </div>
+        <div class="cal-day has-event">
+         10
+        </div>
+        <div class="cal-day">
+         11
+        </div>
+        <div class="cal-day">
+         12
+        </div>
+        <div class="cal-day">
+         13
+        </div>
+        <div class="cal-day">
+         14
+        </div>
+        <div class="cal-day">
+         15
+        </div>
+        <div class="cal-day has-event">
+         16
+        </div>
+        <div class="cal-day today">
+         17
+        </div>
+        <div class="cal-day">
+         18
+        </div>
+        <div class="cal-day">
+         19
+        </div>
+        <div class="cal-day">
+         20
+        </div>
+        <div class="cal-day">
+         21
+        </div>
+        <div class="cal-day">
+         22
+        </div>
+        <div class="cal-day">
+         23
+        </div>
+        <div class="cal-day">
+         24
+        </div>
+        <div class="cal-day">
+         25
+        </div>
+        <div class="cal-day has-event">
+         26
+        </div>
+        <div class="cal-day">
+         27
+        </div>
+        <div class="cal-day">
+         28
+        </div>
+        <div class="cal-day">
+         29
+        </div>
+        <div class="cal-day">
+         30
+        </div>
+        <div class="cal-day empty"></div>
+        <div class="cal-day empty"></div>
+        <div class="cal-day empty"></div>
+        <div class="cal-day empty"></div>
+        <div class="cal-day empty"></div>
+       </div>
+      </div><!-- Upcoming Sessions -->
+      <div class="card">
+       <div class="section-label">
+        Upcoming Sessions
+       </div>
+       <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="background:rgba(99,149,255,0.08);border:1px solid rgba(99,149,255,0.18);border-radius:10px;padding:10px 12px;">
+         <div style="font-size:0.75rem;font-weight:600;color:#a5b8ff;">
+          Today · 3:00 PM
+         </div>
+         <div style="font-size:0.8rem;color:#c8d0e0;margin-top:2px;font-weight:500;">
+          Python Live Workshop
+         </div>
+         <div style="font-size:0.68rem;color:#4a5568;margin-top:2px;">
+          Instructor: Dr. Anita Rao
+         </div>
+        </div>
+        <div style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.18);border-radius:10px;padding:10px 12px;">
+         <div style="font-size:0.75rem;font-weight:600;color:#c4b5fd;">
+          Jun 20 · 5:00 PM
+         </div>
+         <div style="font-size:0.8rem;color:#c8d0e0;margin-top:2px;font-weight:500;">
+          UI/UX Peer Review
+         </div>
+         <div style="font-size:0.68rem;color:#4a5568;margin-top:2px;">
+          Group: Design Cohort A
+         </div>
+        </div>
+        <div style="background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.18);border-radius:10px;padding:10px 12px;">
+         <div style="font-size:0.75rem;font-weight:600;color:#6ee7b7;">
+          Jun 24 · 2:00 PM
+         </div>
+         <div style="font-size:0.8rem;color:#c8d0e0;margin-top:2px;font-weight:500;">
+          SQL Final Assessment
+         </div>
+         <div style="font-size:0.68rem;color:#4a5568;margin-top:2px;">
+          Duration: 90 minutes
+         </div>
+        </div>
+       </div>
+      </div><!-- Leaderboard -->
+      <div class="card">
+       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div class="section-label" style="margin-bottom:0;">
+         Leaderboard
+        </div><span style="font-size:0.65rem;color:#4a5568;font-weight:600;">This Week</span>
+       </div>
+       <div class="leader-row">
+        <div class="leader-rank leader-crown">
+         👑
+        </div>
+        <div class="leader-avatar" style="background:linear-gradient(135deg,#fbbf24,#f59e0b);">
+         AK
+        </div>
+        <div class="leader-name">
+         Aisha K.
+        </div>
+        <div class="leader-pts">
+         840 XP
+        </div>
+       </div>
+       <div class="leader-row">
+        <div class="leader-rank">
+         2
+        </div>
+        <div class="leader-avatar" style="background:linear-gradient(135deg,#6395ff,#a78bfa);">
+         RJ
+        </div>
+        <div class="leader-name">
+         Raj J.
+        </div>
+        <div class="leader-pts">
+         720 XP
+        </div>
+       </div>
+       <div class="leader-row">
+        <div class="leader-rank">
+         3
+        </div>
+        <div class="leader-avatar" style="background:linear-gradient(135deg,#34d399,#6ee7b7);">
+         SM
+        </div>
+        <div class="leader-name">
+         Sara M.
+        </div>
+        <div class="leader-pts">
+         665 XP
+        </div>
+       </div>
+       <div class="leader-row" style="background:rgba(99,149,255,0.07);border-radius:8px;padding:4px 6px;">
+        <div class="leader-rank" style="color:#6395ff;">
+         5
+        </div>
+        <div class="leader-avatar" style="background:linear-gradient(135deg,#6395ff,#a78bfa);">
+         IN
+        </div>
+        <div class="leader-name" style="color:#a5b8ff;font-weight:600;">
+         You
+        </div>
+        <div class="leader-pts">
+         320 XP
+        </div>
+       </div>
+      </div>
+     </div><!-- /col-right -->
+    </div><!-- /content-area -->
+   </div><!-- /main-wrap -->
+  </div><!-- /app-root -->
+  <script>
+    // ── Init Lucide ──
+    lucide.createIcons();
+
+    // ── Sidebar nav ──
+    document.querySelectorAll('.nav-item[data-page]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const page = btn.dataset.page;
+        const titleEl = document.getElementById('pageHeading');
+        const labels = {
+          dashboard: 'Dashboard',
+          courses: 'Courses',
+          resources: 'Resources',
+          chat: 'Chat',
+          schedule: 'Schedule',
+          profile: 'Profile',
+          settings: 'Settings'
+        };
+        if (titleEl && labels[page]) titleEl.textContent = labels[page];
+      });
+    });
+
+    // ── Mobile sidebar ──
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const mobileToggle = document.getElementById('mobileToggle');
+
+    function openSidebar() {
+      sidebar.classList.add('open');
+      overlay.classList.add('open');
+    }
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('open');
+    }
+
+    mobileToggle.addEventListener('click', openSidebar);
+    overlay.addEventListener('click', closeSidebar);
+
+    // ── Element SDK ──
+    const defaultConfig = {
+      app_title: 'MindScroll',
+      user_name: 'Infonative',
+      page_heading: 'Dashboard',
+      welcome_message: "Keep learning — you're on a 5-day streak!",
+      background_color: '#0d0f1a',
+      surface_color: '#161929',
+      text_color: '#c8d0e0',
+      accent_color: '#6395ff',
+      secondary_accent: '#a78bfa',
+      font_family: 'DM Sans',
+      font_size: 14
+    };
+
+    window.elementSdk && window.elementSdk.init({
+      defaultConfig,
+      onConfigChange: async (config) => {
+        // App title
+        const logoEl = document.getElementById('logoText');
+        if (logoEl) logoEl.textContent = config.app_title || defaultConfig.app_title;
+
+        // Page heading
+        const headingEl = document.getElementById('pageHeading');
+        if (headingEl) headingEl.textContent = config.page_heading || defaultConfig.page_heading;
+
+        // User name & initials
+        const name = config.user_name || defaultConfig.user_name;
+        const nameEl = document.getElementById('userName');
+        if (nameEl) nameEl.textContent = name;
+        const initialsEl = document.getElementById('userInitials');
+        if (initialsEl) initialsEl.textContent = name.substring(0, 2).toUpperCase();
+
+        // Welcome message
+        const wMsg = document.getElementById('welcomeMsg');
+        if (wMsg) wMsg.textContent = config.welcome_message || defaultConfig.welcome_message;
+
+        // Body background
+        document.body.style.backgroundColor = config.background_color || defaultConfig.background_color;
+
+        // Surface color: sidebar, topbar, cards
+        const surfaceColor = config.surface_color || defaultConfig.surface_color;
+        document.querySelectorAll('.sidebar, .topbar, .card, .discovery-card, .stat-card').forEach(el => {
+          el.style.backgroundColor = surfaceColor;
+        });
+
+        // Text color
+        const textColor = config.text_color || defaultConfig.text_color;
+        document.querySelectorAll('.course-name, .user-name, .topbar-title, .logo-text, .welcome-text-block h2').forEach(el => {
+          el.style.color = textColor;
+        });
+
+        // Accent color
+        const accent = config.accent_color || defaultConfig.accent_color;
+        document.querySelectorAll('.nav-item.active').forEach(el => {
+          el.style.color = accent;
+        });
+        document.querySelectorAll('.leader-pts').forEach(el => {
+          el.style.color = accent;
+        });
+        document.querySelectorAll('.ai-pulse').forEach(el => {
+          el.style.background = accent;
+        });
+
+        // Secondary accent
+        const secAccent = config.secondary_accent || defaultConfig.secondary_accent;
+        // used in gradients via inline styles — update welcome CTA
+        document.querySelectorAll('.welcome-cta').forEach(el => {
+          el.style.background = `linear-gradient(135deg, ${accent}, ${secAccent})`;
+        });
+
+        // Font family
+        const font = config.font_family || defaultConfig.font_family;
+        const baseStack = 'Arial, sans-serif';
+        document.querySelectorAll('.course-name, .stat-value, .activity-text, .leader-name, .discovery-title, .user-name, .topbar-title').forEach(el => {
+          el.style.fontFamily = `${font}, ${baseStack}`;
+        });
+
+        // Font size scaling
+        const base = config.font_size || defaultConfig.font_size;
+        document.querySelectorAll('.stat-value').forEach(el => { el.style.fontSize = `${base * 1.7}px`; });
+        document.querySelectorAll('.course-name').forEach(el => { el.style.fontSize = `${base * 0.9}px`; });
+        document.querySelectorAll('.activity-text').forEach(el => { el.style.fontSize = `${base * 0.82}px`; });
+        document.querySelectorAll('.discovery-title').forEach(el => { el.style.fontSize = `${base * 0.82}px`; });
+        document.querySelectorAll('.topbar-title').forEach(el => { el.style.fontSize = `${base * 1.15}px`; });
+        document.querySelectorAll('.logo-text').forEach(el => { el.style.fontSize = `${base * 1.15}px`; });
+      },
+      mapToCapabilities: (config) => ({
+        recolorables: [
+          {
+            get: () => config.background_color || defaultConfig.background_color,
+            set: (v) => { config.background_color = v; window.elementSdk.setConfig({ background_color: v }); }
+          },
+          {
+            get: () => config.surface_color || defaultConfig.surface_color,
+            set: (v) => { config.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); }
+          },
+          {
+            get: () => config.text_color || defaultConfig.text_color,
+            set: (v) => { config.text_color = v; window.elementSdk.setConfig({ text_color: v }); }
+          },
+          {
+            get: () => config.accent_color || defaultConfig.accent_color,
+            set: (v) => { config.accent_color = v; window.elementSdk.setConfig({ accent_color: v }); }
+          },
+          {
+            get: () => config.secondary_accent || defaultConfig.secondary_accent,
+            set: (v) => { config.secondary_accent = v; window.elementSdk.setConfig({ secondary_accent: v }); }
+          }
+        ],
+        borderables: [],
+        fontEditable: {
+          get: () => config.font_family || defaultConfig.font_family,
+          set: (v) => { config.font_family = v; window.elementSdk.setConfig({ font_family: v }); }
+        },
+        fontSizeable: {
+          get: () => config.font_size || defaultConfig.font_size,
+          set: (v) => { config.font_size = v; window.elementSdk.setConfig({ font_size: v }); }
+        }
+      }),
+      mapToEditPanelValues: (config) => new Map([
+        ['app_title', config.app_title || defaultConfig.app_title],
+        ['user_name', config.user_name || defaultConfig.user_name],
+        ['page_heading', config.page_heading || defaultConfig.page_heading],
+        ['welcome_message', config.welcome_message || defaultConfig.welcome_message]
+      ])
+    });
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9e2d8c5725899192',t:'MTc3NDYwNTYyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
