@@ -1,0 +1,28 @@
+/*Light mode (default)*/
+:root, [data-theme="light"] {
+    --bg: #f7f6f2;
+    --text: #1a1a1a;
+    --surface: #ffffff;
+    --border: #d4d1ca;
+    }
+/*Dark mode*/
+[data-theme="dark"] {
+    --bg: #171614;
+    --text: #cdccca;
+    --surface: #1c1b19;
+    --border: #393836;
+    }
+/*Respect OS-level dark mode preference by default*/
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+        --bg: #171614;
+        --text: #cdccca;
+        --surface: #1c1b19;
+        --border: #393836;
+        }
+    }
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    transition: background-color 0.2s ease, color 0.2s ease;
+    }
